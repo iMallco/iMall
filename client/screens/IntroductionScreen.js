@@ -108,10 +108,11 @@ const IntroductionScreen = ({ navigation }) => {
           <View style={styles.referenceContentContainer}>
             {/* Black gradient behind text */}
             <LinearGradient
-              colors={['transparent', 'rgba(0, 0, 0, 0.8)']}
+              colors={['transparent', 'rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0.95)']}
               style={styles.textGradientOverlay}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
+              locations={[0, 0.4, 1]}
             />
             <View style={styles.textContent}>
               <Text style={styles.referenceTitle}>Cook healthy.{'\n'}Eat healthy.</Text>
@@ -138,10 +139,11 @@ const IntroductionScreen = ({ navigation }) => {
           <View style={styles.referenceContentContainer}>
             {/* Black gradient behind text */}
             <LinearGradient
-              colors={['transparent', 'rgba(0, 0, 0, 0.8)']}
+              colors={['transparent', 'rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0.95)']}
               style={styles.textGradientOverlay}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
+              locations={[0, 0.4, 1]}
             />
             <View style={styles.textContent}>
               <Text style={styles.referenceTitle}>{slide.title}</Text>
@@ -280,11 +282,31 @@ const styles = StyleSheet.create({
   // Reference screenshot specific styles
   referenceContentContainer: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 180 : 200, // More space to avoid button overlap
+    bottom: 0,
     left: 0,
     right: 0,
+    height: Platform.OS === 'ios' ? 350 : 370,
+    zIndex: 2,
+  },
+  
+  textGradientOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 1,
+  },
+  
+  textContent: {
     paddingHorizontal: 32,
     zIndex: 2,
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 60 : 80,
+    left: 0,
+    right: 0,
   },
   
   referenceTitle: {
