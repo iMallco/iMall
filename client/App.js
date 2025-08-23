@@ -1,20 +1,35 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import 'react-native-gesture-handler';
 
+// Import providers and navigation
+import { AuthProvider } from './contexts/AuthContext';
+import AppNavigator from './navigation/AppNavigator';
+import { colors } from './styles/globalStyles';
+
+/**
+ * Main App Component
+ * Sets up authentication context and navigation
+ */
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <AuthProvider>
+      <View style={styles.container}>
+        <StatusBar 
+          style="light" 
+          backgroundColor="transparent"
+          translucent={true}
+        />
+        <AppNavigator />
+      </View>
+    </AuthProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: colors.background,
   },
 });
