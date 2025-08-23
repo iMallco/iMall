@@ -106,18 +106,17 @@ const IntroductionScreen = ({ navigation }) => {
           
           {/* Content positioned like in reference */}
           <View style={styles.referenceContentContainer}>
-            <Text style={styles.referenceTitle}>Cook healthy.{'\n'}Eat healthy.</Text>
-            <Text style={styles.referenceSubtitle}>A complete meal plan{'\n'}that meets your nutrition goals</Text>
-            
-            {/* Create my plan button like in reference */}
-            <TouchableOpacity 
-              style={styles.referenceButton} 
-              onPress={() => navigation.navigate('AuthSelection')}
-              activeOpacity={0.9}
-            >
-              <Text style={styles.referenceButtonText}>Create my plan</Text>
-              <Ionicons name="arrow-forward" size={20} color={colors.textPrimary} />
-            </TouchableOpacity>
+            {/* Black gradient behind text */}
+            <LinearGradient
+              colors={['transparent', 'rgba(0, 0, 0, 0.8)']}
+              style={styles.textGradientOverlay}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+            />
+            <View style={styles.textContent}>
+              <Text style={styles.referenceTitle}>Cook healthy.{'\n'}Eat healthy.</Text>
+              <Text style={styles.referenceSubtitle}>A complete meal plan{'\n'}that meets your nutrition goals</Text>
+            </View>
           </View>
         </View>
       ) : (
@@ -137,8 +136,17 @@ const IntroductionScreen = ({ navigation }) => {
           
           {/* Content positioned like in reference */}
           <View style={styles.referenceContentContainer}>
-            <Text style={styles.referenceTitle}>{slide.title}</Text>
-            <Text style={styles.referenceSubtitle}>{slide.subtitle}</Text>
+            {/* Black gradient behind text */}
+            <LinearGradient
+              colors={['transparent', 'rgba(0, 0, 0, 0.8)']}
+              style={styles.textGradientOverlay}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+            />
+            <View style={styles.textContent}>
+              <Text style={styles.referenceTitle}>{slide.title}</Text>
+              <Text style={styles.referenceSubtitle}>{slide.subtitle}</Text>
+            </View>
           </View>
         </View>
       )}
@@ -272,7 +280,7 @@ const styles = StyleSheet.create({
   // Reference screenshot specific styles
   referenceContentContainer: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 60 : 80, // Account for home indicator on iOS
+    bottom: Platform.OS === 'ios' ? 180 : 200, // More space to avoid button overlap
     left: 0,
     right: 0,
     paddingHorizontal: 32,
