@@ -10,17 +10,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '../components/CustomButton';
 import { colors, typography, spacing, borderRadius, globalStyles } from '../styles/globalStyles';
+import { AuthSelectionScreenProps } from '../types';
 
 /**
  * Authentication Selection Screen
  * Allows users to choose between signing up or signing in
  */
-const AuthSelectionScreen = ({ navigation }) => {
-  const handleSignUp = () => {
+const AuthSelectionScreen: React.FC<AuthSelectionScreenProps> = ({ navigation }) => {
+  const handleSignUp = (): void => {
     navigation.navigate('SignUp');
   };
 
-  const handleSignIn = () => {
+  const handleSignIn = (): void => {
     navigation.navigate('SignIn');
   };
 
@@ -206,3 +207,4 @@ const styles = StyleSheet.create({
 });
 
 export default AuthSelectionScreen;
+

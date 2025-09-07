@@ -12,74 +12,62 @@ import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '../components/CustomButton';
 import { useAuth } from '../contexts/AuthContext';
 import { colors, typography, spacing, borderRadius, shadows } from '../styles/globalStyles';
+import { UserTypeSelectionScreenProps, UserType } from '../types';
+
+interface UserTypeOption {
+  id: UserType;
+  title: string;
+  description: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
+}
 
 /**
  * User Type Selection Screen Component
  * Allows users to select their role/user type after authentication
  */
-const UserTypeSelectionScreen = ({ navigation }) => {
+const UserTypeSelectionScreen: React.FC<UserTypeSelectionScreenProps> = ({ navigation }) => {
   const { setUserType, user } = useAuth();
-  const [selectedType, setSelectedType] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [selectedType, setSelectedType] = useState<UserType | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // User type options with icons and descriptions
-  const userTypes = [
+  const userTypes: UserTypeOption[] = [
     {
-      id: 'student',
-      title: 'Student',
-      description: 'Budget-friendly meals and quick recipes for busy student life',
-      icon: 'school-outline',
+      id: 'customer',
+      title: 'Customer',
+      description: 'Browse and purchase products from various vendors',
+      icon: 'person-outline',
       color: '#4299E1',
     },
     {
-      id: 'professional',
-      title: 'Professional',
-      description: 'Balanced nutrition for working professionals with meal prep focus',
-      icon: 'briefcase-outline',
+      id: 'vendor',
+      title: 'Vendor',
+      description: 'Sell your products and manage your store',
+      icon: 'storefront-outline',
       color: '#48BB78',
     },
     {
-      id: 'educator',
-      title: 'Educator',
-      description: 'Nutritious meals that fuel teaching and learning activities',
-      icon: 'library-outline',
+      id: 'admin',
+      title: 'Administrator',
+      description: 'Manage the platform and oversee operations',
+      icon: 'shield-checkmark-outline',
       color: '#ED8936',
-    },
-    {
-      id: 'parent',
-      title: 'Parent',
-      description: 'Family-friendly recipes and nutrition for the whole household',
-      icon: 'people-outline',
-      color: '#9F7AEA',
-    },
-    {
-      id: 'athlete',
-      title: 'Athlete',
-      description: 'Performance-focused nutrition and meal timing strategies',
-      icon: 'fitness-outline',
-      color: '#F56565',
-    },
-    {
-      id: 'senior',
-      title: 'Senior',
-      description: 'Age-appropriate nutrition with easy-to-prepare healthy meals',
-      icon: 'heart-outline',
-      color: '#38B2AC',
     },
   ];
 
   /**
    * Handle user type selection
-   * @param {string} typeId - Selected user type ID
+   * @param typeId - Selected user type ID
    */
-  const handleTypeSelection = (typeId) => {
+  const handleTypeSelection = (typeId: UserType): void => {
     setSelectedType(typeId);
   };
 
   /**
    * Handle continue button press
    */
-  const handleContinue = async () => {
+  const handleContinue = async (): Promise<void> => {
     if (!selectedType) {
       Alert.alert('Selection Required', 'Please select your user type to continue');
       return;
@@ -93,7 +81,7 @@ const UserTypeSelectionScreen = ({ navigation }) => {
       const selectedTypeData = userTypes.find(type => type.id === selectedType);
       Alert.alert(
         'Welcome!',
-        `Great choice! Your ${selectedTypeData.title.toLowerCase()} profile has been set up successfully. You can now start exploring personalized meal plans.`,
+        `Great choice! Your ${selectedTypeData?.title.toLowerCase()} profile has been set up successfully. You can now start exploring the platform.`,
         [
           {
             text: 'Get Started',
@@ -117,9 +105,9 @@ const UserTypeSelectionScreen = ({ navigation }) => {
 
   /**
    * Render user type option
-   * @param {Object} userType - User type data
+   * @param userType - User type data
    */
-  const renderUserTypeOption = (userType) => (
+  const renderUserTypeOption = (userType: UserTypeOption): React.ReactElement => (
     <TouchableOpacity
       key={userType.id}
       style={[
@@ -321,3 +309,4 @@ const styles = StyleSheet.create({
 });
 
 export default UserTypeSelectionScreen;
+

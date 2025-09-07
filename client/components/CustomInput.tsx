@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, StyleSheet, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing, borderRadius } from '../styles/globalStyles';
+import { CustomInputProps } from '../types';
 
 /**
  * Reusable Custom Input Component
  * Supports various input types with validation and password visibility toggle
  */
-const CustomInput = ({
+const CustomInput: React.FC<CustomInputProps> = ({
   label,
   placeholder,
   value,
@@ -15,30 +16,35 @@ const CustomInput = ({
   secureTextEntry = false,
   keyboardType = 'default',
   autoCapitalize = 'sentences',
+  autoComplete,
   error,
   style,
   inputStyle,
   ...props
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const togglePasswordVisibility = () => {
+  const togglePasswordVisibility = (): void => {
     setShowPassword(!showPassword);
   };
 
+  const containerStyle: ViewStyle[] = [styles.container, style].filter(Boolean);
+  
+  const textInputStyle: TextStyle[] = [
+    styles.input,
+    isFocused && styles.inputFocused,
+    error && styles.inputError,
+    inputStyle,
+  ].filter(Boolean);
+
   return (
-    <View style={[styles.container, style]}>
+    <View style={containerStyle}>
       {label && <Text style={styles.label}>{label}</Text>}
       
       <View style={styles.inputContainer}>
         <TextInput
-          style={[
-            styles.input,
-            isFocused && styles.inputFocused,
-            error && styles.inputError,
-            inputStyle,
-          ]}
+          style={textInputStyle}
           placeholder={placeholder}
           placeholderTextColor={colors.textSecondary}
           value={value}
@@ -46,6 +52,7 @@ const CustomInput = ({
           secureTextEntry={secureTextEntry && !showPassword}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
+          autoComplete={autoComplete}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           {...props}
@@ -126,3 +133,4 @@ const styles = StyleSheet.create({
 });
 
 export default CustomInput;
+

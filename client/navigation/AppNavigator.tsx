@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useAuth } from '../contexts/AuthContext';
+import { RootStackParamList } from '../types';
 
 // Import screens
 import IntroductionScreen from '../screens/IntroductionScreen';
@@ -10,13 +11,13 @@ import SignUpScreen from '../screens/SignUpScreen';
 import SignInScreen from '../screens/SignInScreen';
 import UserTypeSelectionScreen from '../screens/UserTypeSelectionScreen';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 /**
  * Main App Navigator
  * Handles navigation flow based on authentication state
  */
-const AppNavigator = () => {
+const AppNavigator: React.FC = () => {
   const { isAuthenticated, hasCompletedOnboarding } = useAuth();
 
   return (
@@ -91,3 +92,4 @@ const AppNavigator = () => {
 };
 
 export default AppNavigator;
+

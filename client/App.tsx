@@ -12,7 +12,7 @@ import { colors } from './styles/globalStyles';
  * Main App Component
  * Sets up authentication context and navigation
  */
-export default function App() {
+const App: React.FC = () => {
   return (
     <AuthProvider>
       <View style={styles.container}>
@@ -25,7 +25,7 @@ export default function App() {
       </View>
     </AuthProvider>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -33,3 +33,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
 });
+
+export default App;
+

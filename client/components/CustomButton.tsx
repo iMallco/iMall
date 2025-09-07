@@ -1,12 +1,13 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
 import { colors, typography, spacing, borderRadius, shadows } from '../styles/globalStyles';
+import { CustomButtonProps } from '../types';
 
 /**
  * Reusable Custom Button Component
  * Supports primary, secondary, and accent variants with loading states
  */
-const CustomButton = ({ 
+const CustomButton: React.FC<CustomButtonProps> = ({ 
   title, 
   onPress, 
   variant = 'primary', 
@@ -16,7 +17,7 @@ const CustomButton = ({
   textStyle,
   ...props 
 }) => {
-  const getButtonStyle = () => {
+  const getButtonStyle = (): ViewStyle[] => {
     switch (variant) {
       case 'secondary':
         return [
@@ -24,25 +25,25 @@ const CustomButton = ({
           styles.secondaryButton,
           disabled && styles.disabledButton,
           style,
-        ];
+        ].filter(Boolean);
       case 'accent':
         return [
           styles.button,
           styles.accentButton,
           disabled && styles.disabledButton,
           style,
-        ];
+        ].filter(Boolean);
       default:
         return [
           styles.button,
           styles.primaryButton,
           disabled && styles.disabledButton,
           style,
-        ];
+        ].filter(Boolean);
     }
   };
 
-  const getTextStyle = () => {
+  const getTextStyle = (): TextStyle[] => {
     switch (variant) {
       case 'secondary':
         return [
@@ -50,21 +51,21 @@ const CustomButton = ({
           styles.secondaryButtonText,
           disabled && styles.disabledButtonText,
           textStyle,
-        ];
+        ].filter(Boolean);
       case 'accent':
         return [
           styles.buttonText,
           styles.primaryButtonText,
           disabled && styles.disabledButtonText,
           textStyle,
-        ];
+        ].filter(Boolean);
       default:
         return [
           styles.buttonText,
           styles.primaryButtonText,
           disabled && styles.disabledButtonText,
           textStyle,
-        ];
+        ].filter(Boolean);
     }
   };
 
@@ -136,3 +137,4 @@ const styles = StyleSheet.create({
 });
 
 export default CustomButton;
+

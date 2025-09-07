@@ -15,26 +15,37 @@ import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 import { useAuth } from '../contexts/AuthContext';
 import { colors, typography, spacing, borderRadius, globalStyles } from '../styles/globalStyles';
+import { SignInScreenProps } from '../types';
+
+interface FormData {
+  email: string;
+  password: string;
+}
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+}
 
 /**
  * Sign In Screen Component
  * Handles user authentication with form validation
  */
-const SignInScreen = ({ navigation }) => {
+const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
   const { signIn, resetPassword } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [loading, setLoading] = useState<boolean>(false);
+  const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
   /**
    * Validate form data
-   * @returns {boolean} - Whether the form is valid
+   * @returns Whether the form is valid
    */
-  const validateForm = () => {
-    const newErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -55,22 +66,22 @@ const SignInScreen = ({ navigation }) => {
 
   /**
    * Handle input changes
-   * @param {string} field - Field name
-   * @param {string} value - Input value
+   * @param field - Field name
+   * @param value - Input value
    */
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: keyof FormData, value: string): void => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
     // Clear error for this field when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
   /**
    * Handle sign in submission
    */
-  const handleSignIn = async () => {
+  const handleSignIn = async (): Promise<void> => {
     if (!validateForm()) {
       return;
     }
@@ -98,7 +109,7 @@ const SignInScreen = ({ navigation }) => {
   /**
    * Handle forgot password
    */
-  const handleForgotPassword = async () => {
+  const handleForgotPassword = async (): Promise<void> => {
     if (!formData.email.trim()) {
       Alert.alert('Email Required', 'Please enter your email address first');
       return;
@@ -128,14 +139,14 @@ const SignInScreen = ({ navigation }) => {
   /**
    * Navigate to sign up screen
    */
-  const handleSignUpPress = () => {
+  const handleSignUpPress = (): void => {
     navigation.navigate('SignUp');
   };
 
   /**
    * Navigate back to auth selection
    */
-  const handleBackPress = () => {
+  const handleBackPress = (): void => {
     navigation.goBack();
   };
 
@@ -312,3 +323,4 @@ const styles = StyleSheet.create({
 });
 
 export default SignInScreen;
+

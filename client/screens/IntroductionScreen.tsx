@@ -6,15 +6,17 @@ import {
   ScrollView,
   Dimensions,
   Image,
-  SafeAreaView,
   TouchableOpacity,
   StatusBar,
   Platform,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '../components/CustomButton';
 import { colors, typography, spacing, borderRadius, globalStyles } from '../styles/globalStyles';
+import { IntroductionScreenProps, OnboardingSlide } from '../types';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,9 +24,9 @@ const { width, height } = Dimensions.get('window');
  * Introduction/Walkthrough Screen Component
  * Displays a series of onboarding slides explaining the app's features
  */
-const IntroductionScreen = ({ navigation }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const scrollViewRef = useRef(null);
+const IntroductionScreen: React.FC<IntroductionScreenProps> = ({ navigation }) => {
+  const [currentSlide, setCurrentSlide] = useState<number>(0);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   // Hide status bar on all slides for full screen effect
   useEffect(() => {
@@ -37,7 +39,7 @@ const IntroductionScreen = ({ navigation }) => {
   }, []);
 
   // Onboarding slides data
-  const slides = [
+  const slides: OnboardingSlide[] = [
     {
       id: 1,
       title: 'Cook healthy.\nEat healthy.',
@@ -61,7 +63,7 @@ const IntroductionScreen = ({ navigation }) => {
     },
   ];
 
-  const handleNext = () => {
+  const handleNext = (): void => {
     if (currentSlide < slides.length - 1) {
       const nextSlide = currentSlide + 1;
       setCurrentSlide(nextSlide);
@@ -75,7 +77,7 @@ const IntroductionScreen = ({ navigation }) => {
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = (): void => {
     if (currentSlide > 0) {
       const prevSlide = currentSlide - 1;
       setCurrentSlide(prevSlide);
@@ -86,12 +88,12 @@ const IntroductionScreen = ({ navigation }) => {
     }
   };
 
-  const handleScroll = (event) => {
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>): void => {
     const slideIndex = Math.round(event.nativeEvent.contentOffset.x / width);
     setCurrentSlide(slideIndex);
   };
 
-  const renderSlide = (slide, index) => (
+  const renderSlide = (slide: OnboardingSlide, index: number): React.ReactElement => (
     <View key={slide.id} style={styles.slide}>
       {index === 0 ? (
         // First slide with food background image - matches reference screenshot
@@ -155,7 +157,7 @@ const IntroductionScreen = ({ navigation }) => {
     </View>
   );
 
-  const renderPaginationDots = () => (
+  const renderPaginationDots = (): React.ReactElement => (
     <View style={styles.paginationContainer}>
       {slides.map((_, index) => (
         <View
@@ -423,3 +425,4 @@ const styles = StyleSheet.create({
 });
 
 export default IntroductionScreen;
+

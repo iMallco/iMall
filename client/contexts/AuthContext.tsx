@@ -1,12 +1,13 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { User, AuthContextType, SignUpData, SignInData, AuthResult, UserType } from '../types';
 
 /**
  * Authentication Context
  * Manages user authentication state and provides methods for sign-in/sign-up
  */
-const AuthContext = createContext();
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
@@ -14,22 +15,26 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(false);
 
   /**
    * Sign up a new user
-   * @param {Object} userData - User data containing name, email, password
+   * @param userData - User data containing name, email, password
    */
-  const signUp = async (userData) => {
+  const signUp = async (userData: SignUpData): Promise<AuthResult> => {
     try {
       // Simulate API call
       console.log('Signing up user:', userData);
       
       // Create user object
-      const newUser = {
+      const newUser: User = {
         id: Date.now().toString(),
         name: userData.name,
         email: userData.email,
@@ -41,21 +46,22 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Sign up error:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      return { success: false, error: errorMessage };
     }
   };
 
   /**
    * Sign in existing user
-   * @param {Object} credentials - User credentials containing email and password
+   * @param credentials - User credentials containing email and password
    */
-  const signIn = async (credentials) => {
+  const signIn = async (credentials: SignInData): Promise<AuthResult> => {
     try {
       // Simulate API call
       console.log('Signing in user:', credentials.email);
       
       // Mock user data
-      const existingUser = {
+      const existingUser: User = {
         id: '1',
         name: 'John Doe',
         email: credentials.email,
@@ -67,14 +73,15 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Sign in error:', error);
-      return { success: false, error: error.message };
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      return { success: false, error: errorMessage };
     }
   };
 
   /**
    * Sign out user
    */
-  const signOut = () => {
+  const signOut = (): void => {
     setUser(null);
     setIsAuthenticated(false);
     setHasCompletedOnboarding(false);
@@ -82,30 +89,31 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Set user type after selection
-   * @param {string} userType - Selected user type
+   * @param userType - Selected user type
    */
-  const setUserType = (userType) => {
+  const setUserType = (userType: UserType): void => {
     if (user) {
-      setUser(prev => ({ ...prev, userType }));
+      setUser(prev => prev ? { ...prev, userType } : null);
       setHasCompletedOnboarding(true);
     }
   };
 
   /**
    * Reset password (mock implementation)
-   * @param {string} email - User's email
+   * @param email - User's email
    */
-  const resetPassword = async (email) => {
+  const resetPassword = async (email: string): Promise<AuthResult> => {
     try {
       console.log('Password reset requested for:', email);
       // Simulate API call
       return { success: true };
     } catch (error) {
-      return { success: false, error: error.message };
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      return { success: false, error: errorMessage };
     }
   };
 
-  const value = {
+  const value: AuthContextType = {
     user,
     isAuthenticated,
     hasCompletedOnboarding,
@@ -122,3 +130,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+

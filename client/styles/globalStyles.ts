@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { Colors, Typography, Spacing, BorderRadius, Shadows, Dimensions as DimensionsType } from '../types';
 
 const { width, height } = Dimensions.get('window');
 
@@ -6,7 +7,7 @@ const { width, height } = Dimensions.get('window');
  * Global styles and theme configuration
  * Based on the modern, clean design shown in the reference screenshot
  */
-export const colors = {
+export const colors: Colors = {
   // Primary colors from the reference design
   primary: '#2D3748',      // Dark blue-gray for text
   secondary: '#4A5568',    // Medium gray for secondary text
@@ -38,7 +39,7 @@ export const colors = {
   warning: '#ED8936',
 };
 
-export const typography = {
+export const typography: Typography = {
   // Font sizes
   xs: 12,
   sm: 14,
@@ -51,14 +52,14 @@ export const typography = {
   '5xl': 48,
   
   // Font weights
-  light: '300',
-  normal: '400',
-  medium: '500',
-  semibold: '600',
-  bold: '700',
+  light: '300' as const,
+  normal: '400' as const,
+  medium: '500' as const,
+  semibold: '600' as const,
+  bold: '700' as const,
 };
 
-export const spacing = {
+export const spacing: Spacing = {
   xs: 4,
   sm: 8,
   md: 16,
@@ -68,7 +69,7 @@ export const spacing = {
   '3xl': 64,
 };
 
-export const borderRadius = {
+export const borderRadius: BorderRadius = {
   sm: 8,
   md: 12,
   lg: 16,
@@ -76,7 +77,7 @@ export const borderRadius = {
   full: 9999,
 };
 
-export const shadows = {
+export const shadows: Shadows = {
   sm: {
     shadowColor: '#000',
     shadowOffset: {
@@ -238,7 +239,7 @@ export const globalStyles = StyleSheet.create({
 });
 
 // Screen dimensions
-export const dimensions = {
+export const dimensions: DimensionsType = {
   width,
   height,
   isSmallScreen: width < 375,
