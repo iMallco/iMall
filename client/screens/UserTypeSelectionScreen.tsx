@@ -36,23 +36,16 @@ const UserTypeSelectionScreen: React.FC<UserTypeSelectionScreenProps> = ({ navig
     {
       id: 'customer',
       title: 'Customer',
-      description: 'Browse and purchase products from various vendors',
+      description: 'Browse and purchase products from various vendors across the marketplace',
       icon: 'person-outline',
       color: '#4299E1',
     },
     {
       id: 'vendor',
       title: 'Vendor',
-      description: 'Sell your products and manage your store',
+      description: 'Sell your products, manage your store, and reach more customers',
       icon: 'storefront-outline',
       color: '#48BB78',
-    },
-    {
-      id: 'admin',
-      title: 'Administrator',
-      description: 'Manage the platform and oversee operations',
-      icon: 'shield-checkmark-outline',
-      color: '#ED8936',
     },
   ];
 
@@ -79,9 +72,13 @@ const UserTypeSelectionScreen: React.FC<UserTypeSelectionScreenProps> = ({ navig
       
       // Show success message
       const selectedTypeData = userTypes.find(type => type.id === selectedType);
+      const welcomeMessage = selectedType === 'vendor' 
+        ? 'Welcome to iMall! Your vendor profile is ready. You can now start setting up your store and adding products.'
+        : 'Welcome to iMall! Your customer profile is ready. You can now start browsing and shopping from amazing vendors.';
+      
       Alert.alert(
-        'Welcome!',
-        `Great choice! Your ${selectedTypeData?.title.toLowerCase()} profile has been set up successfully. You can now start exploring the platform.`,
+        'Profile Created!',
+        welcomeMessage,
         [
           {
             text: 'Get Started',
@@ -155,9 +152,9 @@ const UserTypeSelectionScreen: React.FC<UserTypeSelectionScreenProps> = ({ navig
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Choose Your Profile</Text>
+          <Text style={styles.title}>How will you use iMall?</Text>
           <Text style={styles.subtitle}>
-            Help us personalize your experience by selecting the option that best describes you
+            Choose your role to get started with the right features and experience for you
           </Text>
         </View>
 
