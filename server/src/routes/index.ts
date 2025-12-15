@@ -1,13 +1,15 @@
 import { Router } from 'express';
+import authRoutes from './auth.routes';
 
 const router = Router();
 
-// Example route structure
-// Import and use specific route modules here
-// import userRoutes from './user.routes';
-// import productRoutes from './product.routes';
+// Authentication routes
+router.use('/auth', authRoutes);
 
-// router.use('/users', userRoutes);
+// Future routes
+// import productRoutes from './product.routes';
+// import vendorRoutes from './vendor.routes';
 // router.use('/products', productRoutes);
+// router.use('/vendors', vendorRoutes);
 
 export default router;
