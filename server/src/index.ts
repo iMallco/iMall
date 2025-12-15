@@ -1,6 +1,8 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import routes from './routes';
+import { errorHandler } from './middleware/errorHandler';
 
 // Load environment variables
 dotenv.config();
@@ -19,6 +21,7 @@ app.get('/', (_req: Request, res: Response) => {
   res.json({
     message: 'Welcome to iMall API',
     status: 'success',
+    version: '1.0.0',
     timestamp: new Date().toISOString()
   });
 });
@@ -32,6 +35,9 @@ app.get('/health', (_req: Request, res: Response) => {
   });
 });
 
+// API routes
+app.use('/api', routes);
+
 // 404 handler
 app.use((_req: Request, res: Response) => {
   res.status(404).json({
@@ -39,6 +45,9 @@ app.use((_req: Request, res: Response) => {
     status: 'error'
   });
 });
+
+// Error handler (must be last)
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {

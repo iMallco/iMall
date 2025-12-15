@@ -44,9 +44,9 @@ export class AuthController {
 
       // Generate token
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
-        authConfig.jwtSecret,
-        { expiresIn: authConfig.jwtExpiresIn }
+        { userId: user.id, email: user.email } as object,
+        authConfig.jwtSecret as string,
+        { expiresIn: authConfig.jwtExpiresIn } as jwt.SignOptions
       );
 
       const response: AuthResult = {
@@ -102,9 +102,9 @@ export class AuthController {
 
       // Generate token
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
-        authConfig.jwtSecret,
-        { expiresIn: authConfig.jwtExpiresIn }
+        { userId: user.id, email: user.email } as object,
+        authConfig.jwtSecret as string,
+        { expiresIn: authConfig.jwtExpiresIn } as jwt.SignOptions
       );
 
       const response: AuthResult = {
@@ -213,7 +213,7 @@ export class AuthController {
   }
 
   // Logout (for token invalidation if needed)
-  async logout(req: Request, res: Response): Promise<void> {
+  async logout(_req: Request, res: Response): Promise<void> {
     try {
       // In a production app with token blacklist:
       // - Add token to blacklist
