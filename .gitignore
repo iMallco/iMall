@@ -15,7 +15,7 @@ client/package-lock.json
 .Trashes
 ehthumbs.db
 Thumbs.db
-
+.env
 # IDE
 .vscode/
 .idea/
