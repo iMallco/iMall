@@ -22,7 +22,7 @@ export class AuthController {
       const { name, email, password } = req.body;
 
       // Check if user already exists
-      const existingUser = userStore.findByEmail(email);
+      const existingUser = await userStore.findByEmail(email);
       if (existingUser) {
         res.status(400).json({
           success: false,
@@ -35,7 +35,7 @@ export class AuthController {
       const hashedPassword = await bcrypt.hash(password, authConfig.bcryptSaltRounds);
 
       // Create user
-      const user = userStore.create({
+      const user = await userStore.create({
         name,
         email,
         password: hashedPassword,
@@ -81,7 +81,7 @@ export class AuthController {
       const { email, password } = req.body;
 
       // Find user
-      const user = userStore.findByEmail(email);
+      const user = await userStore.findByEmail(email);
       if (!user) {
         res.status(401).json({
           success: false,
@@ -157,7 +157,7 @@ export class AuthController {
       }
 
       // Find user
-      const user = userStore.findById(userId);
+      const user = await userStore.findById(userId);
       if (!user) {
         res.status(404).json({
           success: false,
@@ -167,7 +167,7 @@ export class AuthController {
       }
 
       // Update user type
-      const updatedUser = userStore.update(userId, { userType });
+      const updatedUser = await userStore.update(userId, { userType });
       if (!updatedUser) {
         res.status(500).json({
           success: false,
@@ -204,7 +204,7 @@ export class AuthController {
       const { email } = req.body;
 
       // Find user
-      const user = userStore.findByEmail(email);
+      const user = await userStore.findByEmail(email);
       if (!user) {
         // Don't reveal if email exists for security
         res.status(200).json({
@@ -254,9 +254,17 @@ export class AuthController {
   // Get current user
   async getMe(req: Request, res: Response): Promise<void> {
     try {
-      const userId = (req as any).userId; // Set by auth middleware
+      const userId = req.userId; // Set by auth middleware
 
-      const user = userStore.findById(userId);
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          error: 'Authentication required'
+        });
+        return;
+      }
+
+      const user = await userStore.findById(userId);
       if (!user) {
         res.status(404).json({
           success: false,

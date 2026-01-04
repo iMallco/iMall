@@ -1,4 +1,8 @@
-export type UserType = 'customer' | 'vendor' | 'admin' | null;
+import prisma from '../lib/prisma';
+import { UserType as PrismaUserType } from '@prisma/client';
+
+// Re-export types for backwards compatibility
+export type UserType = PrismaUserType | null;
 
 export interface User {
   id: string;
@@ -35,49 +39,60 @@ export interface AuthResult {
   error?: string;
 }
 
-// In-memory user storage (replace with database later)
+// Database-backed user storage using Prisma
 export class UserStore {
-  private users: User[] = [];
-
-  findByEmail(email: string): User | undefined {
-    return this.users.find(user => user.email.toLowerCase() === email.toLowerCase());
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() }
+    });
+    return user as User | null;
   }
 
-  findById(id: string): User | undefined {
-    return this.users.find(user => user.id === id);
+  async findById(id: string): Promise<User | null> {
+    const user = await prisma.user.findUnique({
+      where: { id }
+    });
+    return user as User | null;
   }
 
-  create(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): User {
-    const user: User = {
-      id: this.generateId(),
-      ...userData,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.users.push(user);
-    return user;
+  async create(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
+    const user = await prisma.user.create({
+      data: {
+        name: userData.name,
+        email: userData.email.toLowerCase(),
+        password: userData.password,
+        userType: userData.userType as PrismaUserType | null,
+      }
+    });
+    return user as User;
   }
 
-  update(id: string, updates: Partial<User>): User | null {
-    const userIndex = this.users.findIndex(user => user.id === id);
-    if (userIndex === -1) return null;
-
-    this.users[userIndex] = {
-      ...this.users[userIndex],
-      ...updates,
-      updatedAt: new Date()
-    };
-    return this.users[userIndex];
+  async update(id: string, updates: Partial<User>): Promise<User | null> {
+    try {
+      const user = await prisma.user.update({
+        where: { id },
+        data: {
+          ...(updates.name && { name: updates.name }),
+          ...(updates.email && { email: updates.email.toLowerCase() }),
+          ...(updates.password && { password: updates.password }),
+          ...(updates.userType !== undefined && { userType: updates.userType as PrismaUserType | null }),
+        }
+      });
+      return user as User;
+    } catch {
+      return null;
+    }
   }
 
-  delete(id: string): boolean {
-    const initialLength = this.users.length;
-    this.users = this.users.filter(user => user.id !== id);
-    return this.users.length < initialLength;
-  }
-
-  private generateId(): string {
-    return `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  async delete(id: string): Promise<boolean> {
+    try {
+      await prisma.user.delete({
+        where: { id }
+      });
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   // Helper to convert User to UserResponse (exclude password)

@@ -1,0 +1,32 @@
+// Prisma Schema for iMall
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // URL is configured in prisma.config.ts for Prisma 7+
+}
+
+// User model - replaces in-memory UserStore
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+  userType  UserType?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("users")
+}
+
+enum UserType {
+  customer
+  vendor
+  admin
+
+  @@map("user_type")
+}

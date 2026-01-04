@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthContextType, SignUpData, SignInData, AuthResult, UserType } from '../types';
+import * as authService from '../services/authService';
 
 /**
  * Authentication Context
- * Manages user authentication state and provides methods for sign-in/sign-up
+ * Manages user authentication state with real backend API calls
  */
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -23,27 +24,46 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Initialize auth state on app launch
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const storedUser = await authService.initializeAuth();
+        if (storedUser) {
+          setUser(storedUser as User);
+          setIsAuthenticated(true);
+          setHasCompletedOnboarding(storedUser.userType !== null);
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
+  }, []);
 
   /**
    * Sign up a new user
-   * @param userData - User data containing name, email, password
    */
   const signUp = async (userData: SignUpData): Promise<AuthResult> => {
     try {
-      // Simulate API call
-      console.log('Signing up user:', userData);
-      
-      // Create user object
-      const newUser: User = {
-        id: Date.now().toString(),
+      const result = await authService.signUp({
         name: userData.name,
         email: userData.email,
-        userType: null, // Will be set after user type selection
-      };
-      
-      setUser(newUser);
-      setIsAuthenticated(true);
-      return { success: true };
+        password: userData.password,
+      });
+
+      if (result.success && result.user) {
+        setUser(result.user as User);
+        setIsAuthenticated(true);
+        return { success: true };
+      }
+
+      return { success: false, error: result.error || 'Sign up failed' };
     } catch (error) {
       console.error('Sign up error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -53,24 +73,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   /**
    * Sign in existing user
-   * @param credentials - User credentials containing email and password
    */
   const signIn = async (credentials: SignInData): Promise<AuthResult> => {
     try {
-      // Simulate API call
-      console.log('Signing in user:', credentials.email);
-      
-      // Mock user data
-      const existingUser: User = {
-        id: '1',
-        name: 'John Doe',
+      const result = await authService.signIn({
         email: credentials.email,
-        userType: null,
-      };
-      
-      setUser(existingUser);
-      setIsAuthenticated(true);
-      return { success: true };
+        password: credentials.password,
+      });
+
+      if (result.success && result.user) {
+        setUser(result.user as User);
+        setIsAuthenticated(true);
+        setHasCompletedOnboarding(result.user.userType !== null);
+        return { success: true };
+      }
+
+      return { success: false, error: result.error || 'Invalid email or password' };
     } catch (error) {
       console.error('Sign in error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -81,7 +99,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   /**
    * Sign out user
    */
-  const signOut = (): void => {
+  const signOut = async (): Promise<void> => {
+    await authService.signOut();
     setUser(null);
     setIsAuthenticated(false);
     setHasCompletedOnboarding(false);
@@ -89,24 +108,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   /**
    * Set user type after selection
-   * @param userType - Selected user type
    */
-  const setUserType = (userType: UserType): void => {
-    if (user) {
-      setUser(prev => prev ? { ...prev, userType } : null);
-      setHasCompletedOnboarding(true);
+  const setUserType = async (userType: UserType): Promise<void> => {
+    if (!user) return;
+
+    try {
+      const result = await authService.setUserType(user.id, userType as 'customer' | 'vendor');
+
+      if (result.success && result.user) {
+        setUser(result.user as User);
+        setHasCompletedOnboarding(true);
+      }
+    } catch (error) {
+      console.error('Set user type error:', error);
     }
   };
 
   /**
-   * Reset password (mock implementation)
-   * @param email - User's email
+   * Reset password
    */
   const resetPassword = async (email: string): Promise<AuthResult> => {
     try {
-      console.log('Password reset requested for:', email);
-      // Simulate API call
-      return { success: true };
+      const result = await authService.resetPassword(email);
+      return { success: result.success, error: result.error };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       return { success: false, error: errorMessage };
@@ -124,10 +148,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     resetPassword,
   };
 
+  // Show nothing while checking auth state (or you could render a loading spinner)
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
-

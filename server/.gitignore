@@ -31,3 +31,5 @@ logs/
 # Testing
 coverage/
 .nyc_output/
+
+/src/generated/prisma
