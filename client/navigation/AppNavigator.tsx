@@ -10,6 +10,7 @@ import AuthSelectionScreen from '../screens/AuthSelectionScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import SignInScreen from '../screens/SignInScreen';
 import UserTypeSelectionScreen from '../screens/UserTypeSelectionScreen';
+import CustomerTabNavigator from './CustomerTabNavigator';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -42,6 +43,7 @@ const AppNavigator: React.FC = () => {
             };
           },
         }}
+        initialRouteName={!isAuthenticated ? 'Introduction' : !hasCompletedOnboarding ? 'UserTypeSelection' : 'MainApp'}
       >
         {!isAuthenticated ? (
           // Unauthenticated stack - Onboarding flow
@@ -56,14 +58,25 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen
               name="AuthSelection"
               component={AuthSelectionScreen}
+              options={{
+                gestureEnabled: false, // Prevent swipe back from auth selection
+              }}
             />
             <Stack.Screen
               name="SignUp"
               component={SignUpScreen}
+              options={{
+                gestureEnabled: true,
+                headerShown: false,
+              }}
             />
             <Stack.Screen
               name="SignIn"
               component={SignInScreen}
+              options={{
+                gestureEnabled: true,
+                headerShown: false,
+              }}
             />
           </>
         ) : !hasCompletedOnboarding ? (
@@ -76,13 +89,12 @@ const AppNavigator: React.FC = () => {
             }}
           />
         ) : (
-          // Fully authenticated and onboarded - Main app screens would go here
+          // Fully authenticated and onboarded - Show customer tab navigator
           <Stack.Screen
             name="MainApp"
-            component={() => {
-              // Placeholder for main app content
-              // In a real app, this would be your main tab navigator or home screen
-              return null;
+            component={CustomerTabNavigator}
+            options={{
+              gestureEnabled: false, // Prevent going back once in main app
             }}
           />
         )}

@@ -72,8 +72,8 @@ const IntroductionScreen: React.FC<IntroductionScreenProps> = ({ navigation }) =
         animated: true,
       });
     } else {
-      // Navigate to sign-up/sign-in selection screen
-      navigation.navigate('AuthSelection');
+      // Replace current screen with AuthSelection to prevent going back
+      navigation.replace('AuthSelection');
     }
   };
 
@@ -131,7 +131,7 @@ const IntroductionScreen: React.FC<IntroductionScreenProps> = ({ navigation }) =
                 ? require('../assets/jollof.png')
                 : require('../assets/puff-puff.jpg')
             }
-            style={styles.backgroundImage}
+            style={styles.backgroundImage} 
             resizeMode="cover"
           />
           {/* Dark overlay for better text readability */}

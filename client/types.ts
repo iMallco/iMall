@@ -9,6 +9,8 @@ export type RootStackParamList = {
   SignIn: undefined;
   UserTypeSelection: undefined;
   MainApp: undefined;
+  Profile: undefined;
+  Explore: undefined;
 };
 
 export type NavigationProp<T extends keyof RootStackParamList> = StackNavigationProp<
@@ -139,6 +141,14 @@ export interface SignInScreenProps {
 
 export interface UserTypeSelectionScreenProps {
   navigation: NavigationProp<'UserTypeSelection'>;
+}
+
+export interface ProfileScreenProps {
+  navigation: NavigationProp<'Profile'>;
+}
+
+export interface ExploreScreenProps {
+  navigation: NavigationProp<'Explore'>;
 }
 
 // Onboarding Slide Type

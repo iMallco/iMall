@@ -1,94 +1,193 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   SafeAreaView,
-  Image,
+  ScrollView,
+  Animated,
+  Dimensions,
+  TouchableOpacity,
+  StatusBar,
+  Platform,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '../components/CustomButton';
-import { colors, typography, spacing, borderRadius, globalStyles } from '../styles/globalStyles';
+import { colors, typography, spacing, borderRadius, shadows } from '../styles/globalStyles';
 import { AuthSelectionScreenProps } from '../types';
+import { useScreenReplacement } from '../hooks/useScreenReplacement';
+
+const { width, height } = Dimensions.get('window');
 
 /**
- * Authentication Selection Screen
- * Allows users to choose between signing up or signing in
+ * Authentication Selection Screen - Completely Redesigned
+ * Modern, clean design with card-based layout and animations
  */
 const AuthSelectionScreen: React.FC<AuthSelectionScreenProps> = ({ navigation }) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const { replaceScreen } = useScreenReplacement();
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 700,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
   const handleSignUp = (): void => {
-    navigation.navigate('SignUp');
+    // Replace current screen to prevent going back to auth selection
+    replaceScreen('SignUp');
   };
 
   const handleSignIn = (): void => {
-    navigation.navigate('SignIn');
+    // Replace current screen to prevent going back to auth selection
+    replaceScreen('SignIn');
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['#2D3748', '#4A5568']}
-        style={styles.gradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
+      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        {/* Header section with logo/icon */}
-        <View style={styles.headerSection}>
-          <View style={styles.logoContainer}>
-            <Ionicons 
-              name="restaurant" 
-              size={60} 
-              color={colors.textLight} 
-            />
-          </View>
-          
-          <Text style={styles.appName}>HealthyEats</Text>
-          <Text style={styles.tagline}>Your personal nutrition companion</Text>
-        </View>
-
-        {/* Main content */}
-        <View style={styles.contentSection}>
-          <View style={styles.illustrationContainer}>
-            {/* Placeholder for food illustration */}
-            <View style={styles.foodIllustration}>
-              <Ionicons 
-                name="nutrition-outline" 
-                size={120} 
-                color="rgba(255, 255, 255, 0.3)" 
-              />
+        {/* Header Section */}
+        <Animated.View 
+          style={[
+            styles.headerSection,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }]
+            }
+          ]}
+        >
+          <View style={styles.logoSection}>
+            <View style={styles.logoContainer}>
+              <Ionicons name="storefront" size={40} color={colors.buttonPrimary} />
             </View>
+            <Text style={styles.appName}>iMall</Text>
+            <Text style={styles.tagline}>Your Digital Marketplace</Text>
           </View>
+        </Animated.View>
 
-          <View style={styles.textContainer}>
-            <Text style={styles.welcomeTitle}>Welcome!</Text>
+        {/* Main Content Card */}
+        <Animated.View 
+          style={[
+            styles.mainCard,
+            {
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }]
+            }
+          ]}
+        >
+          {/* Hero Section */}
+          <View style={styles.heroSection}>
+            <View style={styles.iconGrid}>
+              <View style={styles.iconItem}>
+                <Ionicons name="bag-handle" size={24} color={colors.success} />
+              </View>
+              <View style={styles.iconItem}>
+                <Ionicons name="card" size={24} color={colors.buttonAccent} />
+              </View>
+              <View style={styles.iconItem}>
+                <Ionicons name="people" size={24} color={colors.inputBorderFocus} />
+              </View>
+              <View style={styles.iconItem}>
+                <Ionicons name="star" size={24} color={colors.warning} />
+              </View>
+            </View>
+            
+            <Text style={styles.welcomeTitle}>Welcome to iMall</Text>
             <Text style={styles.welcomeSubtitle}>
-              Join thousands of users who have transformed their eating habits with our personalized meal plans.
+              Join thousands of buyers and sellers in our thriving marketplace. 
+              Discover unique products, connect with vendors, and grow your business.
             </Text>
           </View>
-        </View>
 
-        {/* Bottom section with auth buttons */}
-        <View style={styles.bottomSection}>
+          {/* Features Section */}
+          <View style={styles.featuresSection}>
+            <View style={styles.featureItem}>
+              <View style={styles.featureIcon}>
+                <Ionicons name="shield-checkmark" size={20} color={colors.success} />
+              </View>
+              <Text style={styles.featureText}>Secure Transactions</Text>
+            </View>
+            
+            <View style={styles.featureItem}>
+              <View style={styles.featureIcon}>
+                <Ionicons name="flash" size={20} color={colors.buttonAccent} />
+              </View>
+              <Text style={styles.featureText}>Fast Delivery</Text>
+            </View>
+            
+            <View style={styles.featureItem}>
+              <View style={styles.featureIcon}>
+                <Ionicons name="headset" size={20} color={colors.inputBorderFocus} />
+              </View>
+              <Text style={styles.featureText}>24/7 Support</Text>
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Action Buttons */}
+        <Animated.View 
+          style={[
+            styles.actionSection,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }]
+            }
+          ]}
+        >
           <CustomButton
-            title="Create Account"
+            title={Platform.OS === 'ios' ? 'Sign Up' : 'Create Account'}
             onPress={handleSignUp}
-            style={styles.signUpButton}
+            style={styles.primaryButton}
+            textStyle={styles.primaryButtonText}
           />
           
-          <CustomButton
-            title="Sign In"
+          <TouchableOpacity 
+            style={styles.secondaryButton}
             onPress={handleSignIn}
-            variant="secondary"
-            style={styles.signInButton}
-            textStyle={styles.signInButtonText}
-          />
-          
+            activeOpacity={0.8}
+          >
+            <Text style={styles.secondaryButtonText}>
+              Already have an account? Sign In
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* Footer */}
+        <Animated.View 
+          style={[
+            styles.footer,
+            { opacity: fadeAnim }
+          ]}
+        >
           <Text style={styles.termsText}>
-            By continuing, you agree to our Terms of Service and Privacy Policy
+            By continuing, you agree to our{' '}
+            <Text style={styles.linkText}>Terms of Service</Text>
+            {' '}and{' '}
+            <Text style={styles.linkText}>Privacy Policy</Text>
           </Text>
-        </View>
-      </LinearGradient>
+        </Animated.View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -96,115 +195,174 @@ const AuthSelectionScreen: React.FC<AuthSelectionScreenProps> = ({ navigation })
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background,
   },
   
-  gradient: {
+  scrollView: {
     flex: 1,
-    justifyContent: 'space-between',
+  },
+  
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.lg,
   },
   
   headerSection: {
     alignItems: 'center',
-    paddingTop: spacing['2xl'],
-    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
+  },
+  
+  logoSection: {
+    alignItems: 'center',
   },
   
   logoContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: colors.cardBackground,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.lg,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    marginBottom: spacing.md,
+    ...shadows.md,
   },
   
   appName: {
-    fontSize: typography['3xl'],
+    fontSize: typography['4xl'],
     fontWeight: typography.bold,
-    color: colors.textLight,
+    color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
   
   tagline: {
     fontSize: typography.base,
-    color: 'rgba(255, 255, 255, 0.8)',
-    textAlign: 'center',
+    color: colors.textSecondary,
+    fontWeight: typography.medium,
   },
   
-  contentSection: {
-    flex: 1,
-    justifyContent: 'center',
+  mainCard: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: borderRadius.xl,
+    padding: spacing.xl,
+    marginVertical: spacing.lg,
+    ...shadows.lg,
+  },
+  
+  heroSection: {
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-  },
-  
-  illustrationContainer: {
     marginBottom: spacing.xl,
   },
   
-  foodIllustration: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  iconGrid: {
+    flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    marginBottom: spacing.xl,
+    gap: spacing.md,
   },
   
-  textContainer: {
+  iconItem: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.background,
+    justifyContent: 'center',
     alignItems: 'center',
+    ...shadows.sm,
   },
   
   welcomeTitle: {
-    fontSize: typography['2xl'],
+    fontSize: typography['3xl'],
     fontWeight: typography.bold,
-    color: colors.textLight,
-    marginBottom: spacing.md,
+    color: colors.textPrimary,
     textAlign: 'center',
+    marginBottom: spacing.md,
   },
   
   welcomeSubtitle: {
     fontSize: typography.base,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: typography.base * 1.5,
-    maxWidth: 300,
+    lineHeight: typography.base * 1.6,
+    maxWidth: width * 0.8,
   },
   
-  bottomSection: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
+  featuresSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingTop: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: colors.inputBorder,
   },
   
-  signUpButton: {
-    backgroundColor: colors.textLight,
+  featureItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  
+  featureIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+    ...shadows.sm,
+  },
+  
+  featureText: {
+    fontSize: typography.xs,
+    color: colors.textSecondary,
+    fontWeight: typography.medium,
+    textAlign: 'center',
+  },
+  
+  actionSection: {
+    paddingVertical: spacing.lg,
+  },
+  
+  primaryButton: {
+    backgroundColor: colors.buttonPrimary,
+    borderRadius: borderRadius.xl,
+    paddingVertical: spacing.lg,
     marginBottom: spacing.md,
+    ...shadows.md,
   },
   
-  signInButton: {
-    backgroundColor: 'transparent',
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    borderWidth: 1,
-    marginBottom: spacing.lg,
-  },
-  
-  signInButtonText: {
+  primaryButtonText: {
     color: colors.textLight,
+    fontSize: typography.lg,
+    fontWeight: typography.bold,
+  },
+  
+  secondaryButton: {
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+  },
+  
+  secondaryButtonText: {
+    fontSize: typography.base,
+    color: colors.textSecondary,
+    fontWeight: typography.medium,
+  },
+  
+  footer: {
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.md,
   },
   
   termsText: {
-    fontSize: typography.xs,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: typography.sm,
+    color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: typography.xs * 1.4,
-    paddingHorizontal: spacing.md,
+    lineHeight: typography.sm * 1.4,
+  },
+  
+  linkText: {
+    color: colors.buttonPrimary,
+    fontWeight: typography.semibold,
   },
 });
 
 export default AuthSelectionScreen;
-

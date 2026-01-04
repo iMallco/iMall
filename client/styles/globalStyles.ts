@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 import { Colors, Typography, Spacing, BorderRadius, Shadows, Dimensions as DimensionsType } from '../types';
 
 const { width, height } = Dimensions.get('window');
@@ -82,31 +82,31 @@ export const shadows: Shadows = {
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: Platform.OS === 'ios' ? 1 : 2,
     },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowOpacity: Platform.OS === 'ios' ? 0.05 : 0.1,
+    shadowRadius: Platform.OS === 'ios' ? 2 : 3,
+    elevation: Platform.OS === 'android' ? 2 : 0,
   },
   md: {
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: Platform.OS === 'ios' ? 2 : 3,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: Platform.OS === 'ios' ? 0.1 : 0.15,
+    shadowRadius: Platform.OS === 'ios' ? 4 : 5,
+    elevation: Platform.OS === 'android' ? 4 : 0,
   },
   lg: {
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: Platform.OS === 'ios' ? 4 : 6,
     },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: Platform.OS === 'ios' ? 0.15 : 0.2,
+    shadowRadius: Platform.OS === 'ios' ? 8 : 10,
+    elevation: Platform.OS === 'android' ? 8 : 0,
   },
 };
 
