@@ -137,6 +137,25 @@ export class AuthController {
 
       const { userId, userType } = req.body;
 
+      // SECURITY: Users can only change their OWN user type
+      const authenticatedUserId = req.userId;
+      if (userId !== authenticatedUserId) {
+        res.status(403).json({
+          success: false,
+          error: 'You can only change your own user type'
+        });
+        return;
+      }
+
+      // SECURITY: Prevent self-escalation to admin
+      if (userType === 'admin') {
+        res.status(403).json({
+          success: false,
+          error: 'Admin privileges cannot be self-assigned'
+        });
+        return;
+      }
+
       // Find user
       const user = userStore.findById(userId);
       if (!user) {

@@ -32,3 +32,9 @@ node_modules/
 # Build outputs
 build/
 dist/
+
+# Markdown files (except README)
+*.md
+!README.md
+!readme.md
+!Readme.md
