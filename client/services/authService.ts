@@ -3,7 +3,7 @@
  * Handles all auth-related API calls
  */
 
-import { api, ApiResponse } from './api';
+import { api } from './api';
 import { saveToken, removeToken, saveUserData, clearAuthData, getToken } from './tokenStorage';
 
 // Types matching server responses
@@ -39,14 +39,16 @@ export interface SignInData {
 export async function signUp(data: SignUpData): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/auth/signup', data);
 
-    if (response.success && response.token && response.user) {
-        // Store token and user data
-        await saveToken(response.token);
-        await saveUserData(response.user);
-        api.setAuthToken(response.token);
+    // The API returns the response directly, not wrapped in data
+    const authResult = response as unknown as AuthResponse;
+
+    if (authResult.success && authResult.token && authResult.user) {
+        await saveToken(authResult.token);
+        await saveUserData(authResult.user);
+        api.setAuthToken(authResult.token);
     }
 
-    return response as AuthResponse;
+    return authResult;
 }
 
 /**
@@ -55,14 +57,15 @@ export async function signUp(data: SignUpData): Promise<AuthResponse> {
 export async function signIn(data: SignInData): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/auth/signin', data);
 
-    if (response.success && response.token && response.user) {
-        // Store token and user data
-        await saveToken(response.token);
-        await saveUserData(response.user);
-        api.setAuthToken(response.token);
+    const authResult = response as unknown as AuthResponse;
+
+    if (authResult.success && authResult.token && authResult.user) {
+        await saveToken(authResult.token);
+        await saveUserData(authResult.user);
+        api.setAuthToken(authResult.token);
     }
 
-    return response as AuthResponse;
+    return authResult;
 }
 
 /**
@@ -70,12 +73,10 @@ export async function signIn(data: SignInData): Promise<AuthResponse> {
  */
 export async function signOut(): Promise<void> {
     try {
-        // Call logout endpoint (optional, clears server-side session if any)
         await api.post('/auth/logout');
     } catch {
         // Ignore errors - we're logging out anyway
     } finally {
-        // Clear local storage and token
         await clearAuthData();
         api.setAuthToken(null);
     }
@@ -85,11 +86,13 @@ export async function signOut(): Promise<void> {
  * Get current user from server
  */
 export async function getCurrentUser(): Promise<UserResponse | null> {
-    const response = await api.get<{ user: UserResponse }>('/auth/me');
+    const response = await api.get<{ success: boolean; user: UserResponse }>('/auth/me');
 
-    if (response.success && response.data?.user) {
-        await saveUserData(response.data.user);
-        return response.data.user;
+    const result = response as unknown as { success: boolean; user?: UserResponse };
+
+    if (result.success && result.user) {
+        await saveUserData(result.user);
+        return result.user;
     }
 
     return null;
@@ -107,18 +110,21 @@ export async function setUserType(
         userType,
     });
 
-    if (response.success && response.user) {
-        await saveUserData(response.user);
+    const authResult = response as unknown as AuthResponse;
+
+    if (authResult.success && authResult.user) {
+        await saveUserData(authResult.user);
     }
 
-    return response as AuthResponse;
+    return authResult;
 }
 
 /**
  * Request password reset
  */
 export async function resetPassword(email: string): Promise<AuthResponse> {
-    return api.post<AuthResponse>('/auth/reset-password', { email }) as Promise<AuthResponse>;
+    const response = await api.post<AuthResponse>('/auth/reset-password', { email });
+    return response as unknown as AuthResponse;
 }
 
 /**
@@ -135,16 +141,13 @@ export async function initializeAuth(): Promise<UserResponse | null> {
     api.setAuthToken(token);
 
     try {
-        // Verify token is still valid
         const user = await getCurrentUser();
         if (!user) {
-            // Token expired or invalid
             await clearAuthData();
             api.setAuthToken(null);
         }
         return user;
     } catch {
-        // Token verification failed
         await clearAuthData();
         api.setAuthToken(null);
         return null;

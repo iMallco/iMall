@@ -20,7 +20,9 @@
       "bundleIdentifier": "com.imall.marketplace",
       "buildNumber": "1",
       "infoPlist": {
-        "UIBackgroundModes": ["background-fetch"],
+        "UIBackgroundModes": [
+          "background-fetch"
+        ],
         "NSCameraUsageDescription": "This app uses camera to scan QR codes and take product photos",
         "NSPhotoLibraryUsageDescription": "This app needs access to photo library to select product images"
       },
@@ -53,5 +55,8 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }
